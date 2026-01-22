@@ -345,46 +345,51 @@ class BuildTaskListView extends GetView {
                       )),
                   Row(
                     children: [
-                      // Left side: Progress text + Percentage
+                      // Left side: Progress text + Percentage (hide percentage on mobile)
                       Expanded(
-                          flex: 1,
                           child: Row(
-                            children: [
-                              Text(
-                                getProgressText(),
-                                style: Get.textTheme.bodyLarge
-                                    ?.copyWith(color: Get.theme.disabledColor),
+                        children: [
+                          Flexible(
+                            child: Text(
+                              getProgressText(),
+                              style: Get.textTheme.bodyLarge
+                                  ?.copyWith(color: Get.theme.disabledColor),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (!Util.isMobile() &&
+                              getPercentText().isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              getPercentText(),
+                              style: Get.textTheme.bodyLarge
+                                  ?.copyWith(color: Get.theme.disabledColor),
+                            ),
+                          ],
+                        ],
+                      ).padding(left: 18)),
+                      // Right side: ETA + Speed + Actions (hide ETA on mobile)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!Util.isMobile() && getEtaText().isNotEmpty) ...[
+                            Text(
+                              getEtaText(),
+                              style: Get.textTheme.titleSmall,
+                            ),
+                            Text(
+                              " | ",
+                              style: Get.textTheme.titleSmall?.copyWith(
+                                color: Get.theme.disabledColor,
+                                fontWeight: FontWeight.w300,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                getPercentText(),
-                                style: Get.textTheme.bodyLarge
-                                    ?.copyWith(color: Get.theme.disabledColor),
-                              ),
-                            ],
-                          ).padding(left: 18)),
-                      // Right side: ETA + Speed + Actions
-                      Expanded(
-                          flex: 1,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                getEtaText(),
-                                style: Get.textTheme.titleSmall,
-                              ),
-                              Text(
-                                " | ",
-                                style: Get.textTheme.titleSmall?.copyWith(
-                                  color: Get.theme.disabledColor,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ).padding(horizontal: 4),
-                              Text("${Util.fmtByte(task.progress.speed)} / s",
-                                  style: Get.textTheme.titleSmall),
-                              ...buildActions()
-                            ],
-                          )),
+                            ).padding(horizontal: 4),
+                          ],
+                          Text("${Util.fmtByte(task.progress.speed)}/s",
+                              style: Get.textTheme.titleSmall),
+                          ...buildActions()
+                        ],
+                      ),
                     ],
                   ),
                   isDone()
